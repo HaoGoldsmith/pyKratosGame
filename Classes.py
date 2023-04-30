@@ -1,4 +1,6 @@
 import math
+import pygame as pg
+import random
 
 class Vector2(object):
 
@@ -21,4 +23,37 @@ class Vector2(object):
         self.x /= magnitude
         self.y /= magnitude
 
+
+
+class Bubble(pg.sprite.Sprite):
+
+    def __init__(self, x, y, size, group=None, image = 'bubble.png'):
+        pg.sprite.Sprite.__init__(self)
+
+        self.image = pg.transform.scale(pg.image.load(image).convert_alpha(), (size, size))
+
+        self.rect = self.image.get_rect(center=(x, y))
+
+        self.x_coordinate = x
+
+        self.y_coordinate = y
+
+        # self.add(group)
+
+        self.size = size
+
+        if size < 35:
+            self.speed = 50  # 100-150-120
+        elif size > 55:
+            self.speed = 100
+        else:
+            self.speed = 75
+
+
+    def update(self, H, distance_moved=None):
+        # self.rect.y += distance_moved
+        if self.rect.y < H:
+            self.rect.y += self.speed
+        else:
+            self.kill()
 
