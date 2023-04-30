@@ -50,74 +50,30 @@ def message(msg, color):
     mesg = font_style.render(msg, True, color)
     screen.blit(mesg, [dis_width / 6, dis_height / 3])
 
-# def Bubbles():
-#     # pygame.time.wait(1500) #создает делэй между разными пузырьками
-#     # pygame.time.delay(1500)
-#     bubblex = round(random.randrange(0, dis_width - cat_block) / 10.0) * 10.0
-#     bubbley = round(random.randrange(0, dis_height - cat_block) / 10.0) * 10.0
-#     bubble_size = random.randrange(20, 70)
-#     size_load = []
-#     for i in range(5):
-#         if i < 3:
-#             bubble_size += 5
-#         else:
-#             bubble_size -= 5
-#         size_load.append(bubble_size)
-#     bi_load =[]
-#     for j in size_load:
-#         bi = pygame.transform.scale(bubble_img, (j, j))
-#         bi_load.append(bi)
-#     for g in bi_load:
-#         pygame.time.delay(1500)
-#         screen.blit(g,[bubblex, bubbley, cat_block, cat_block])
 
-# def bubbles(num):
-#     bubbles_array = []
-#     if len(bubbles_array) != num:
-#         for i in range(num-len(bubbles_array)):
-#             bubblex = round(random.randrange(0, dis_width - 10) / 10.0) * 10.0
-#             bubbley = round(random.randrange(0, dis_height - 10) / 10.0) * 10.0
-#             bubble_size = random.randrange(20, 70)
-#             if bubble_size<35:
-#                 bspeed =450 #100-150-120
-#             elif bubble_size>55:
-#                 bspeed = 750
-#             else:
-#                 bspeed = 600
-#             bi = pygame.transform.scale(bubble_img, (bubble_size, bubble_size))
-#             bubbles_array.append([bi, bubblex, bubbley, bspeed])
-#     return bubbles_array
-
-# def bubbles():
-#     bubble_size = random.randrange(20, 70)
-#     bubblex = round(random.randrange(bubble_size, dis_width - bubble_size) / 10.0) * 10.0
-#     bubbley = round(random.randrange(0, dis_height - 430) / 10.0) * 10.0
-#     if bubble_size < 35:
-#         bspeed = 450  # 100-150-120
-#     elif bubble_size > 55:
-#         bspeed = 750
-#     else:
-#         bspeed = 600
-#     bi = pygame.transform.scale(bubble_img, (bubble_size, bubble_size))
-#     return bi, bubblex, bubbley, bspeed
-
-def bubbles():
+def bubbles(group):
     bsize = random.randrange(20, 70)
     bubblex = round(random.randrange(bsize, dis_width - bsize) / 10.0) * 10.0
     bubbley = round(random.randrange(0, dis_height - 430) / 10.0) * 10.0
-    bubble = Bubble(bubblex, bubbley, bsize)
+    bubble = Bubble(bubblex, bubbley, bsize, group)
     return bubble
 
-
-    # bubls = pygame.sprite.Group()
-    # bubbles_array = []
-    # for i in range(num):
-    #     bsize = random.randrange(20, 70)
-    #     bubblex = round(random.randrange(bsize, dis_width - bsize) / 10.0) * 10.0
-    #     bubbley = round(random.randrange(0, dis_height - 430) / 10.0) * 10.0
-    #     bubbles_array.append(Bubble(bubblex, bubbley, bubls, bsize))
-
-
+def bubble_collision(num, main_list, second_list, group):
+    # проверка на то ,что они листы + трай кэтч
+    while len(main_list) < num:
+        if len(main_list) == 0:
+            new_bubble = bubbles(group)
+            main_list.append(new_bubble)
+            second_list.append(new_bubble.rect)
+        else:
+            new_bubble = bubbles(group)
+            collision = new_bubble.rect.collidelist(second_list)
+            if collision != -1:
+                new_bubble.kill()
+            else:
+                main_list.append(new_bubble)
+                second_list.append(new_bubble.rect)
+    return
 
 def gameloop(num):
     game_over = False
@@ -127,10 +83,12 @@ def gameloop(num):
     # x, y = 300, 420
     x, y = dis_width, dis_height
     x_change, y_change = 0, 0
-    # bubls = pygame.sprite.Group()
+    bubls = pygame.sprite.Group()
     bubbles_array = []
-    for i in range(num):
-        bubbles_array.append(bubbles())
+    bubbles_rects = []
+    if num > 10:
+        num = 10
+    bubble_collision(num, bubbles_array, bubbles_rects, bubls)
     while not game_over:
         while True:
             for event in pygame.event.get():
@@ -144,29 +102,28 @@ def gameloop(num):
             x += x_change
             y += y_change
             screen.blit(background, (0, 0))
-            # for b in bubbles_array:
-            #     i = 0
-            #     for i in range(5):
-            #         screen.blit(b[0], (b[1], b[2]))
-            #         time_passed = clock.tick(b[3])
-            #         time_passed_seconds = time_passed / 1000.0
-            #         distance_moved = time_passed_seconds * b[3]
-            #         b[2] += distance_moved
-            #         if b[2] > 480:
-            #             b[2] -= 480
-            # bubls.draw(screen)
+
             for b in bubbles_array:
                 screen.blit(b.image, b.rect)
-                time_passed = clock.tick(b.speed)
+                time_passed = clock.tick(144)
                 time_passed_seconds = time_passed / 1000.0
-                distance_moved = time_passed_seconds * b.speed
-                b.rect.y += distance_moved
-                print(b,  b.speed,    b.rect.y)
-                if b.rect.y > 480:
+                # distance_moved = time_passed_seconds * b.speed * (b.speed/5) #60
+                distance_moved = time_passed_seconds * b.speed**2 # 60
+                if b.rect.y < 480:
+                    b.rect.y += distance_moved
+                    # b.rect.y += b.speed
+                else:
                     bubbles_array.remove(b)
                     b.kill()
-                    new_bubble = bubbles()
-                    bubbles_array.append(new_bubble)
+                    # while len(bubbles_array) < num:
+                    #     new_bubble = bubbles(bubls)
+                    #     collision = new_bubble.rect.collidelist(bubbles_rects)
+                    #     if collision != -1:
+                    #         new_bubble.kill()
+                    #     else:
+                    #         bubbles_array.append(new_bubble)
+                    #         bubbles_rects.append(new_bubble.rect)
+                    bubble_collision(num, bubbles_array, bubbles_rects, bubls)
             pygame.display.update()
             screen.blit(mouse_cursor, (x, y))
             # clock.tick(cat_speed) #cкорость движения кота зависит от скорости пузыря
@@ -175,5 +132,5 @@ def gameloop(num):
     quit()
 
 
-gameloop(3)
+gameloop(7)
 

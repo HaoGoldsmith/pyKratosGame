@@ -27,7 +27,7 @@ class Vector2(object):
 
 class Bubble(pg.sprite.Sprite):
 
-    def __init__(self, x, y, size, group=None, image = 'bubble.png'):
+    def __init__(self, x, y, size, group, image = 'bubble.png'):
         pg.sprite.Sprite.__init__(self)
 
         self.image = pg.transform.scale(pg.image.load(image).convert_alpha(), (size, size))
@@ -38,16 +38,21 @@ class Bubble(pg.sprite.Sprite):
 
         self.y_coordinate = y
 
-        # self.add(group)
+        self.add(group)
 
         self.size = size
 
-        if size < 35:
-            self.speed = 50  # 100-150-120
-        elif size > 55:
-            self.speed = 100
+        if size < 30:
+            self.speed = 15  # 50-100-75
+        elif size in range (30, 40):
+            self.speed = 20
+        elif size in range (40, 50):
+            self.speed = 25
+        elif size > 60:
+            self.speed = 35
         else:
-            self.speed = 75
+            self.speed = 30
+
 
 
     def update(self, H, distance_moved=None):
@@ -56,4 +61,9 @@ class Bubble(pg.sprite.Sprite):
             self.rect.y += self.speed
         else:
             self.kill()
+
+
+
+
+
 
