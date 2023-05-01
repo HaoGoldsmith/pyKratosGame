@@ -19,11 +19,11 @@ background = pygame.image.load(background_image_filename).convert()
 mouse_cursor = pygame.image.load(mouse_image_filename).convert_alpha()
 bubble_img = pygame.image.load(bubble_img_filename).convert_alpha()
 
-black = (0,0,0)
+black = (0, 0, 0)
 red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
-light_blue = (240,248,255)
+light_blue = (240, 248, 255)
 yellow = (255, 255, 102)
 
 font_style = pygame.font.SysFont("bahnschrift", 25)
@@ -31,9 +31,9 @@ score_font = pygame.font.SysFont("comicsansms", 35)
 font = pygame.font.SysFont("arial", 16)
 font_height = font.get_linesize()
 event_text = []
-text_surface = font.render("Pygame is cool!", False, (0,0,0), (255, 255, 255))
+text_surface = font.render("Pygame is cool!", False, (0, 0, 0), (255, 255, 255))
 
-# pygame.time.set_timer(pygame.USEREVENT, 3000)
+pygame.time.set_timer(pygame.USEREVENT, 500)
 clock = pygame.time.Clock()
 cat_block = 10
 cat_speed = 250
@@ -45,6 +45,7 @@ bubbley = round(random.randrange(0, dis_height - cat_block) / 10.0) * 10.0
 def Your_score(score):
     value = score_font.render("Ваш счёт: " + str(score), True, yellow)
     screen.blit(value, [0, 0])
+
 
 def message(msg, color):
     mesg = font_style.render(msg, True, color)
@@ -58,7 +59,8 @@ def bubbles(group):
     bubble = Bubble(bubblex, bubbley, bsize, group)
     return bubble
 
-def bubble_collision(num, main_list, second_list, group):
+
+def bubble_collision(main_list, second_list, group, num=1):
     # проверка на то ,что они листы + трай кэтч
     while len(main_list) < num:
         if len(main_list) == 0:
@@ -75,12 +77,10 @@ def bubble_collision(num, main_list, second_list, group):
                 second_list.append(new_bubble.rect)
     return
 
+
 def gameloop(num):
     game_over = False
     game_close = False
-    # x1 = dis_width / 2
-    # y1 = 100
-    # x, y = 300, 420
     x, y = dis_width, dis_height
     x_change, y_change = 0, 0
     bubls = pygame.sprite.Group()
@@ -88,7 +88,11 @@ def gameloop(num):
     bubbles_rects = []
     if num > 10:
         num = 10
-    bubble_collision(num, bubbles_array, bubbles_rects, bubls)
+    bfirst = bubbles(bubls)
+    bubbles_array.append(bfirst)
+    # bubble_collision(bubbles_array, bubbles_rects, bubls)  # cоздаем самый первый пузырик
+    time_passed = clock.tick(144)
+    time_passed_seconds = time_passed / 1000.0
     while not game_over:
         while True:
             for event in pygame.event.get():
@@ -99,32 +103,41 @@ def gameloop(num):
                         x_change = -1
                     elif event.key == K_RIGHT:
                         x_change = +1
+                if event.type == USEREVENT:
+                    if num > len(bubbles_array):
+                        i = bubbles(bubls)
+                        bubbles_array.append(i)
+                    # if len(bubbles_array) < 4:
+                    #     print (bubbles_array)
+                    #     print(len(bubbles_array))
+                    #     bubble_collision(bubbles_array, bubbles_rects, bubls, 3)
             x += x_change
             y += y_change
             screen.blit(background, (0, 0))
-
+            bubls.draw(screen)
+            pygame.display.update()
+            pygame.time.delay(20)
+            bubls.update(dis_height, time_passed_seconds)
             for b in bubbles_array:
-                screen.blit(b.image, b.rect)
-                time_passed = clock.tick(144)
-                time_passed_seconds = time_passed / 1000.0
-                # distance_moved = time_passed_seconds * b.speed * (b.speed/5) #60
-                distance_moved = time_passed_seconds * b.speed**2 # 60
+                distance_moved = time_passed_seconds * b.speed  # 60
                 if b.rect.y < 480:
                     b.rect.y += distance_moved
-                    # b.rect.y += b.speed
                 else:
                     bubbles_array.remove(b)
                     b.kill()
-                    # while len(bubbles_array) < num:
-                    #     new_bubble = bubbles(bubls)
-                    #     collision = new_bubble.rect.collidelist(bubbles_rects)
-                    #     if collision != -1:
-                    #         new_bubble.kill()
-                    #     else:
-                    #         bubbles_array.append(new_bubble)
-                    #         bubbles_rects.append(new_bubble.rect)
-                    bubble_collision(num, bubbles_array, bubbles_rects, bubls)
-            pygame.display.update()
+                    bubble_collision(bubbles_array, bubbles_rects, bubls, num)
+            # for b in bubbles_array:
+            #     time_passed = clock.tick(144)
+            #     time_passed_seconds = time_passed / 1000.0
+            #     distance_moved = time_passed_seconds * b.speed ** 2  # 60
+            #     if b.rect.y < 480:
+            #         b.rect.y += distance_moved
+            #     else:
+            #         bubbles_array.remove(b)
+            #         b.kill()
+            #         bubble_collision(bubbles_array, bubbles_rects, bubls, num)
+            # pygame.display.update()
+            # pygame.time.delay(20)
             screen.blit(mouse_cursor, (x, y))
             # clock.tick(cat_speed) #cкорость движения кота зависит от скорости пузыря
             # pygame.display.update()
@@ -133,4 +146,3 @@ def gameloop(num):
 
 
 gameloop(7)
-

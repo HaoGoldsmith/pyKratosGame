@@ -42,26 +42,37 @@ class Bubble(pg.sprite.Sprite):
 
         self.size = size
 
-        if size < 30:
-            self.speed = 15  # 50-100-75
+        if size in range (20, 30):
+            self.speed = 10  # 50-100-75
         elif size in range (30, 40):
-            self.speed = 20
+            self.speed = 15
         elif size in range (40, 50):
+            self.speed = 20
+        elif size in range (50, 60):
             self.speed = 25
-        elif size > 60:
-            self.speed = 35
         else:
             self.speed = 30
 
+        # if size in range(20, 30):
+        #     self.speed = 50  # 50-100-75
+        # elif size in range(30, 40):
+        #     self.speed = 70
+        # elif size in range(40, 50):
+        #     self.speed = 110
+        # elif size in range(50, 60):
+        #     self.speed = 150
+        # else:
+        #     self.speed = 200
 
 
-    def update(self, H, distance_moved=None):
+
+    def update(self, H, time_passed_seconds):
         # self.rect.y += distance_moved
+        distance_moved = time_passed_seconds * self.speed**2  # 60
         if self.rect.y < H:
-            self.rect.y += self.speed
+            self.rect.y += distance_moved
         else:
             self.kill()
-
 
 
 
