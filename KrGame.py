@@ -90,7 +90,6 @@ def gameloop(num):
         num = 10
     bfirst = bubbles(bubls)
     bubbles_array.append(bfirst)
-    # bubble_collision(bubbles_array, bubbles_rects, bubls)  # cоздаем самый первый пузырик
     time_passed = clock.tick(144)
     time_passed_seconds = time_passed / 1000.0
     while not game_over:
@@ -107,37 +106,22 @@ def gameloop(num):
                     if num > len(bubbles_array):
                         i = bubbles(bubls)
                         bubbles_array.append(i)
-                    # if len(bubbles_array) < 4:
-                    #     print (bubbles_array)
-                    #     print(len(bubbles_array))
-                    #     bubble_collision(bubbles_array, bubbles_rects, bubls, 3)
             x += x_change
             y += y_change
             screen.blit(background, (0, 0))
             bubls.draw(screen)
             pygame.display.update()
-            pygame.time.delay(20)
+            pygame.time.delay(25)
             bubls.update(dis_height, time_passed_seconds)
             for b in bubbles_array:
                 distance_moved = time_passed_seconds * b.speed  # 60
-                if b.rect.y < 480:
+                if b.rect.y < (480-b.size):
                     b.rect.y += distance_moved
                 else:
+                    b.image =pygame.image.load('Untitled-1.png').convert_alpha()
                     bubbles_array.remove(b)
                     b.kill()
                     bubble_collision(bubbles_array, bubbles_rects, bubls, num)
-            # for b in bubbles_array:
-            #     time_passed = clock.tick(144)
-            #     time_passed_seconds = time_passed / 1000.0
-            #     distance_moved = time_passed_seconds * b.speed ** 2  # 60
-            #     if b.rect.y < 480:
-            #         b.rect.y += distance_moved
-            #     else:
-            #         bubbles_array.remove(b)
-            #         b.kill()
-            #         bubble_collision(bubbles_array, bubbles_rects, bubls, num)
-            # pygame.display.update()
-            # pygame.time.delay(20)
             screen.blit(mouse_cursor, (x, y))
             # clock.tick(cat_speed) #cкорость движения кота зависит от скорости пузыря
             # pygame.display.update()
