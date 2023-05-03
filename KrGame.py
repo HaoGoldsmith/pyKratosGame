@@ -88,6 +88,9 @@ def gameloop(num):
     time_passed = clock.tick(144)
     time_passed_seconds = time_passed / 1000.0
 
+    keys = pygame.key.get_pressed()
+
+
     while not game_over:
         # while True:
             while game_close == True:
@@ -96,7 +99,7 @@ def gameloop(num):
                 pygame.display.update()
                 for event in pygame.event.get():
                     if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_q:
+                        if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
                             game_over = True
                             game_close = False
                         if event.key == pygame.K_c:
@@ -105,29 +108,29 @@ def gameloop(num):
                 if event.type == QUIT:
                     game_over = True #проверить на что влияет
                     # exit()
+                if event.type == KEYUP:
+                    if event.key == K_SPACE:
+                        y_change = -1
                 if event.type == KEYDOWN:
-                    if event.key == K_LEFT:
+                    if event.key == K_ESCAPE:
+                        game_over = True
+                    elif event.key == K_LEFT:
                         x_change = -1
                     elif event.key == K_RIGHT:
                         x_change = +1
                     elif event.key == K_SPACE:
-                        y_change = +1
-                if event.type == KEYUP:
-                    if event.key == K_SPACE:
-                        y_change = -1
+                       y_change = +1
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    y_change = +1
+                if event.type == pygame.MOUSEBUTTONUP:
+                    y_change = -1
                 if event.type == USEREVENT:
                     if num > len(bubbles_array):
                         i = bubbles(bubls)
                         bubbles_array.append(i)
             if cat.rect.x >= dis_width-cat.size or cat.rect.x < 0: #конец игры, если коснуться границ
                 game_close = True
-
-
-            # cat.move(x_change, cat_img[1])
-            # cat.catch(x_change, cat_img[1],y_change,cat_img[2])
-
             cat.move(x_change, cat_img[1], y_change, cat_img[2])
-
             screen.blit(background, (0, 0))
             screen.blit(cat.image, cat.rect)
             bubls.draw(screen)
@@ -138,6 +141,10 @@ def gameloop(num):
                 distance_moved = time_passed_seconds * b.speed  # 60
                 if b.rect.y < (480-b.size):
                     b.rect.y += distance_moved
+                    if b.rect.y == cat.rect.y or b.rect.x == cat.rect.x:
+                        bubbles_array.remove(b)
+                        b.kill()
+                        bubble_collision(bubbles_array, bubbles_rects, bubls, num)
                 else:
                     bubbles_array.remove(b)
                     b.kill()
