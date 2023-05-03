@@ -141,10 +141,7 @@ def gameloop(num):
                 distance_moved = time_passed_seconds * b.speed  # 60
                 if b.rect.y < (480-b.size):
                     b.rect.y += distance_moved
-                    if b.rect.x in range (cat.rect.x-cat.speed,cat.rect.x): #шаг кота с расчетом влево+должны быть границы появления бабла
-                        # print(f' b.rect.y - {b.rect.y}, cat.rect.y = {cat.rect.y}, b.rect.x - {b.rect.x}, cat.rect.x - {cat.rect.x}')
-                        print(
-                            f'b.rect.x - {b.rect.x}, cat.rect.x - {cat.rect.x}')
+                    if b.rect.x in range (cat.rect.x-cat.speed,cat.rect.x+cat.speed) and b.rect.y in range(cat.rect.y-b.size, cat.rect.y+b.size): #шаг кота с расчетом влево+должны быть границы появления бабла, y ровно на холке кота для упрощения игры
                         bubbles_array.remove(b)
                         b.kill()
                         bubble_collision(bubbles_array, bubbles_rects, bubls, num)
