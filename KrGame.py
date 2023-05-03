@@ -88,9 +88,6 @@ def gameloop(num):
     time_passed = clock.tick(144)
     time_passed_seconds = time_passed / 1000.0
 
-    keys = pygame.key.get_pressed()
-
-
     while not game_over:
         # while True:
             while game_close == True:
@@ -130,6 +127,7 @@ def gameloop(num):
                         bubbles_array.append(i)
             if cat.rect.x >= dis_width-cat.size or cat.rect.x < 0: #конец игры, если коснуться границ
                 game_close = True
+            keys = pygame.key.get_pressed()
             cat.move(x_change, cat_img[1], y_change, cat_img[2])
             screen.blit(background, (0, 0))
             screen.blit(cat.image, cat.rect)
@@ -141,16 +139,16 @@ def gameloop(num):
                 distance_moved = time_passed_seconds * b.speed  # 60
                 if b.rect.y < (480-b.size):
                     b.rect.y += distance_moved
-                    if b.rect.x in range (cat.rect.x-cat.speed,cat.rect.x+cat.speed) and b.rect.y in range(cat.rect.y-b.size, cat.rect.y+b.size): #шаг кота с расчетом влево+должны быть границы появления бабла, y ровно на холке кота для упрощения игры
-                        bubbles_array.remove(b)
-                        b.kill()
-                        bubble_collision(bubbles_array, bubbles_rects, bubls, num)
+                    if b.rect.x in range (cat.rect.x-cat.speed,cat.rect.x+cat.speed) and b.rect.y in range(cat.rect.y-b.size, cat.rect.y+b.size):#шаг кота с расчетом влево+должны быть границы появления бабла, y ровно на холке кота для упрощения игры
+                        if keys[pygame.K_SPACE]:
+                            print ('yahoo')
+                            bubbles_array.remove(b)
+                            b.kill()
+                            bubble_collision(bubbles_array, bubbles_rects, bubls, num)
                 else:
                     bubbles_array.remove(b)
                     b.kill()
                     bubble_collision(bubbles_array, bubbles_rects, bubls, num)
-            # clock.tick(cat_speed)
-            # pygame.display.update()
     pygame.quit()
     quit()
 
