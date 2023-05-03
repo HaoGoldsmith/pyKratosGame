@@ -18,15 +18,9 @@ class Kratos(pg.sprite.Sprite):
         self.speed = speed
 
 
-    # def catch(self,y_change, image2, image):
-    #     if y_change == 1:
-    #         self.image = pg.image.load(image2).convert_alpha()
-    #         self.image = pg.image.load(image).convert_alpha()
-
     def catch(self,y_change, image2):
         if y_change == 1:
             self.image = pg.image.load(image2).convert_alpha()
-
 
 
     def move(self, x_change, image, y_change, image2):
