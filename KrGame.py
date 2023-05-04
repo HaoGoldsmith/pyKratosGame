@@ -24,19 +24,19 @@ light_blue = (240, 248, 255)
 yellow = (255, 255, 102)
 
 font_style = pygame.font.SysFont("bahnschrift", 25)
-# score_font = pygame.font.SysFont("comicsansms", 35)
-# font = pygame.font.SysFont("arial", 16)
-# font_height = font.get_linesize()
-# event_text = []
-# text_surface = font.render("Pygame is cool!", False, (0, 0, 0), (255, 255, 255))
+score_font = pygame.font.SysFont("bahnschrift", 35)
+font = pygame.font.SysFont("arial", 16)
+font_height = font.get_linesize()
+event_text = []
+text_surface = font.render("Kratos is your emperor!", False, (0, 0, 0), (255, 255, 255))
 
 pygame.time.set_timer(pygame.USEREVENT, 500)
 clock = pygame.time.Clock()
 
 
-# def Your_score(score):
-#     value = score_font.render("Ваш счёт: " + str(score), True, yellow)
-#     screen.blit(value, [0, 0])
+def Your_score(score):
+    value = score_font.render("Your score: " + str(score), True, yellow)
+    screen.blit(value, [0, 0])
 
 
 def message(msg, color):
@@ -78,6 +78,7 @@ def gameloop(num):
     cat = Kratos.Kratos(x, y, cat_img[0])
     x_change, y_change = 0, 0
 
+    Bubbles_popped = 0
     bubls = pygame.sprite.Group()
     bubbles_array = []
     bubbles_rects = []
@@ -132,6 +133,7 @@ def gameloop(num):
             screen.blit(background, (0, 0))
             screen.blit(cat.image, cat.rect)
             bubls.draw(screen)
+            Your_score(Bubbles_popped)
             pygame.display.update()
             pygame.time.delay(25)
             bubls.update(dis_height, time_passed_seconds)
@@ -139,9 +141,14 @@ def gameloop(num):
                 distance_moved = time_passed_seconds * b.speed  # 60
                 if b.rect.y < (480-b.size):
                     b.rect.y += distance_moved
-                    if b.rect.x in range (cat.rect.x-cat.speed,cat.rect.x+cat.speed) and b.rect.y in range(cat.rect.y-b.size, cat.rect.y+b.size):#шаг кота с расчетом влево+должны быть границы появления бабла, y ровно на холке кота для упрощения игры
+                    # if b.rect.x in range (cat.rect.x-cat.speed,cat.rect.x+cat.speed) and b.rect.y in range(cat.rect.y-b.size, cat.rect.y+b.size):
+                    is_caught = pygame.Rect.colliderect(b.rect, cat.rect)
+                    if is_caught:
                         if keys[pygame.K_SPACE]:
-                            print ('yahoo')
+                            b.image = pygame.transform.scale(pygame.image.load('boom.png').convert_alpha(),
+                                                            (b.size, b.size))
+                            # pygame.display.update()
+                            Bubbles_popped +=1
                             bubbles_array.remove(b)
                             b.kill()
                             bubble_collision(bubbles_array, bubbles_rects, bubls, num)
