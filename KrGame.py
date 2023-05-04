@@ -14,7 +14,9 @@ screen_size = (dis_width, dis_height)
 screen = pygame.display.set_mode(screen_size, 0, 32)
 pygame.display.set_caption("Catch the bubble")
 background = pygame.image.load(background_image_filename).convert()
-cat_img = ['Kratos.png', 'nonono.png', 'byak.png']
+cat_img = ['Kratos.png', 'nonono.png', 'byak.png', 'game_over.png', 'success.png']
+cat_ending = Kratos.Kratos(dis_width/2, dis_height/2, cat_img[3],0,150)
+cat_success =Kratos.Kratos(dis_width/2, dis_height/2, cat_img[4],0,150)
 
 black = (0, 0, 0)
 red = (255, 0, 0)
@@ -39,9 +41,10 @@ def Your_score(score):
     screen.blit(value, [0, 0])
 
 
-def message(msg, color):
+def message(msg, color, cat=cat_ending):
     mesg = font_style.render(msg, True, color)
-    screen.blit(mesg, [dis_width / 6, dis_height / 3])
+    screen.blit(mesg, [20, cat.rect.y-dis_height/10])
+    screen.blit(cat.image, (cat.rect.x,cat.rect.y))
 
 
 def bubbles(group):
@@ -74,7 +77,7 @@ def gameloop(num):
     game_over = False
     game_close = False
 
-    x, y = dis_width/2, dis_height-25
+    x, y = dis_width / 2, dis_height - 25
     cat = Kratos.Kratos(x, y, cat_img[0])
     x_change, y_change = 0, 0
 
@@ -90,72 +93,71 @@ def gameloop(num):
     time_passed_seconds = time_passed / 1000.0
 
     while not game_over:
-        # while True:
-            while game_close == True:
-                screen.fill(blue)
-                message("Вы проиграли! Нажмите Q для выхода или C для повторной игры", red)
-                pygame.display.update()
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
-                            game_over = True
-                            game_close = False
-                        if event.key == pygame.K_c:
-                            gameloop(num) #при рестарте баблы сходят с ума
+        while game_close == True:
+            screen.blit(background, (0, 0))
+            if Bubbles_popped<20:
+                message("Weakling! Press C to try again or ESC to lose your dignity", red)
+            else:
+                message("I am great hunter! Let's try again(C) or go to sleep(ESC)", red, cat_success)
+            pygame.display.update()
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    game_over = True #проверить на что влияет
-                    # exit()
-                if event.type == KEYUP:
-                    if event.key == K_SPACE:
-                        y_change = -1
-                if event.type == KEYDOWN:
-                    if event.key == K_ESCAPE:
+                    game_over = True  # проверить на что влияет
+                    exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
                         game_over = True
-                    elif event.key == K_LEFT:
-                        x_change = -1
-                    elif event.key == K_RIGHT:
-                        x_change = +1
-                    elif event.key == K_SPACE:
-                       y_change = +1
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    y_change = +1
-                if event.type == pygame.MOUSEBUTTONUP:
+                        game_close = False
+                    if event.key == pygame.K_c:
+                        gameloop(num)  # при рестарте баблы сходят с ума
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                game_over = True  # проверить на что влияет
+                exit()
+            if event.type == KEYUP:
+                if event.key == K_SPACE:
                     y_change = -1
-                if event.type == USEREVENT:
-                    if num > len(bubbles_array):
-                        i = bubbles(bubls)
-                        bubbles_array.append(i)
-            if cat.rect.x >= dis_width-cat.size or cat.rect.x < 0: #конец игры, если коснуться границ
-                game_close = True
-            keys = pygame.key.get_pressed()
-            cat.move(x_change, cat_img[1], y_change, cat_img[2])
-            screen.blit(background, (0, 0))
-            screen.blit(cat.image, cat.rect)
-            bubls.draw(screen)
-            Your_score(Bubbles_popped)
-            pygame.display.update()
-            pygame.time.delay(25)
-            bubls.update(dis_height, time_passed_seconds)
-            for b in bubbles_array:
-                distance_moved = time_passed_seconds * b.speed  # 60
-                if b.rect.y < (480-b.size):
-                    b.rect.y += distance_moved
-                    # if b.rect.x in range (cat.rect.x-cat.speed,cat.rect.x+cat.speed) and b.rect.y in range(cat.rect.y-b.size, cat.rect.y+b.size):
-                    is_caught = pygame.Rect.colliderect(b.rect, cat.rect)
-                    if is_caught:
-                        if keys[pygame.K_SPACE]:
-                            b.image = pygame.transform.scale(pygame.image.load('boom.png').convert_alpha(),
-                                                            (b.size, b.size))
-                            # pygame.display.update()
-                            Bubbles_popped +=1
-                            bubbles_array.remove(b)
-                            b.kill()
-                            bubble_collision(bubbles_array, bubbles_rects, bubls, num)
-                else:
-                    bubbles_array.remove(b)
-                    b.kill()
-                    bubble_collision(bubbles_array, bubbles_rects, bubls, num)
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    game_over = True
+                elif event.key == K_LEFT:
+                    x_change = -1
+                elif event.key == K_RIGHT:
+                    x_change = +1
+                elif event.key == K_SPACE:
+                    y_change = +1
+            if event.type == USEREVENT:
+                if num > len(bubbles_array):
+                    i = bubbles(bubls)
+                    bubbles_array.append(i)
+        if cat.rect.x >= dis_width - cat.size or cat.rect.x < 0:  # конец игры, если коснуться границ
+            game_close = True
+        keys = pygame.key.get_pressed()
+        cat.move(x_change, cat_img[1], y_change, cat_img[2])
+        screen.blit(background, (0, 0))
+        screen.blit(cat.image, cat.rect)
+        bubls.draw(screen)
+        Your_score(Bubbles_popped)
+        pygame.display.update()
+        pygame.time.delay(25)
+        bubls.update(dis_height, time_passed_seconds)
+        for b in bubbles_array:
+            distance_moved = time_passed_seconds * b.speed  # 60
+            if b.rect.y < (480 - b.size):
+                b.rect.y += distance_moved
+                is_caught = pygame.Rect.colliderect(b.rect, cat.rect)
+                if is_caught:
+                    if keys[pygame.K_SPACE]:
+                        b.image = pygame.transform.scale(pygame.image.load('boom.png').convert_alpha(),
+                                                         (b.size, b.size))  # do not working
+                        Bubbles_popped += 1
+                        bubbles_array.remove(b)
+                        b.kill()
+                        bubble_collision(bubbles_array, bubbles_rects, bubls, num)
+            else:
+                bubbles_array.remove(b)
+                b.kill()
+                bubble_collision(bubbles_array, bubbles_rects, bubls, num)
     pygame.quit()
     quit()
 

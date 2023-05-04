@@ -6,10 +6,10 @@ import random
 class Kratos(pg.sprite.Sprite):
 
 
-    def __init__(self, x, y, image, speed = 5):
+    def __init__(self, x, y, image, speed = 5, size = 50):
         pg.sprite.Sprite.__init__(self)
 
-        self.size = 50
+        self.size = size
 
         self.image = pg.transform.scale(pg.image.load(image).convert_alpha(), (self.size, self.size))
 
