@@ -2,12 +2,13 @@ import math
 import pygame as pg
 import random
 
+
 class Bubble(pg.sprite.Sprite):
 
-    def __init__(self, x, y, size, group, image='bubble.png'):
+    def __init__(self, x, y, size, group, image):
         pg.sprite.Sprite.__init__(self)
 
-        self.image = pg.transform.scale(pg.image.load(image).convert_alpha(), (size, size))
+        self.image = pg.transform.scale(image, (size, size))
 
         self.rect = self.image.get_rect(center=(x, y))
 
@@ -15,43 +16,20 @@ class Bubble(pg.sprite.Sprite):
 
         self.size = size
 
-
-
         if size in range(20, 30):
-            self.speed = 10  # 50-100-75
+            self.speed = 5  # 50-100-75
         elif size in range(30, 40):
-            self.speed = 15
+            self.speed = 8
         elif size in range(40, 50):
-            self.speed = 20
+            self.speed = 10
         elif size in range(50, 60):
-            self.speed = 25
+            self.speed = 12
         else:
-            self.speed = 30
-
-    # def update(self, H, time_passed_seconds):
-    #     # self.rect.y += distance_moved
-    #     distance_moved = time_passed_seconds * self.speed ** 2  # 60
-    #     # if self.rect.y < (H-self.size):
-    #     if self.rect.y < (H - self.size*1.2): #размер модельки курсора?
-    #         self.rect.y += distance_moved
-    #     elif (H - self.size*1.2) <= self.rect.y <= (H - self.size):
-    #         self.image = pg.transform.scale(pg.image.load('bubble1.png').convert_alpha(), (self.size, self.size))
-    #         self.rect.y += distance_moved
-    #     else:  #часть долетает до края до того, как выполнится второе условие
-    #         self.kill()
-
+            self.speed = 14
 
     def update(self, H, time_passed_seconds):
-        # self.rect.y += distance_moved
-            distance_moved = time_passed_seconds * self.speed ** 2
-            if self.rect.y < (H-self.size):
-                self.rect.y += distance_moved
-            else:
-                self.kill()
-
-
-
-    # def boom(self, self.boomy):
-    #     if self.boomy == True:
-    #         self.image = pg.transform.scale(pg.image.load('boom.png').convert_alpha(), (self.size, self.size))
-    #         pg.time.delay(10)
+        distance_moved = time_passed_seconds * self.speed ** 2
+        if self.rect.y < (H - self.size):
+            self.rect.y += distance_moved
+        else:
+            self.kill()
