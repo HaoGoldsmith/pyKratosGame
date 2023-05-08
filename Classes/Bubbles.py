@@ -16,8 +16,6 @@ class Bubble(pg.sprite.Sprite):
 
         self.size = size
 
-        self.pop = 0
-
 
         if size in range(20, 30):
             self.speed = 5  # 50-100-75
@@ -30,7 +28,7 @@ class Bubble(pg.sprite.Sprite):
         else:
             self.speed = 14
 
-    def update(self, H, time_passed_seconds, image):
+    def update(self, H, time_passed_seconds):
         # self.image = pg.transform.scale(image, (self.size, self.size))
         distance_moved = time_passed_seconds * self.speed ** 2
         if self.rect.y < (H - self.size):
@@ -38,6 +36,5 @@ class Bubble(pg.sprite.Sprite):
         else:
             self.kill()
 
-        if self.pop != 0:
-            self.image = pg.transform.scale(image, (self.size, self.size))
+
 

@@ -20,8 +20,10 @@ class Kratos(pg.sprite.Sprite):
 
 
     def catch(self,y_change, image2):
-        if y_change == 1:
+        if y_change == -1:
             self.image = image2
+        elif y_change == 1:
+            self.image = pg.transform.flip(image2, True, False)
 
 
     def move(self, x_change, image, y_change, image2):
@@ -32,8 +34,16 @@ class Kratos(pg.sprite.Sprite):
         elif x_change == -1:
             self.image = pg.transform.flip(image, True, False)
             self.rect.x -= self.speed
-            self.catch(y_change, image2)
+            self.catch(-y_change, image2)
 
+
+    def level_up(self, bubbles_popped):
+        if 15 < bubbles_popped < 35:
+            self.speed = 4
+        elif bubbles_popped > 35:
+            self.speed = 5
+        else:
+            self.speed = 3
 
 
 

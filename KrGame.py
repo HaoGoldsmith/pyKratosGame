@@ -5,17 +5,20 @@ import random
 from Classes import Bubbles, Kratos
 
 pygame.init()
+screen_modes = [(1920, 1080), (1680, 1050), (1600, 900), (1440, 900), (1400, 1050), (1366, 768), (1360, 768), (1280, 1024), (1280, 960), (1280, 800), (1280, 768), (1280, 720), (1280, 600), (1152, 864), (1024, 768), (800, 600), (640, 480), (640, 400), (512, 384), (400, 300), (320, 240), (320, 200)]
 
 '''screen'''
 dis_width = 640
 dis_height = 480
 screen_size = (dis_width, dis_height)
 screen = pygame.display.set_mode(screen_size, 0, 32)
+# screen = pygame.display.set_mode(screen_size, FULLSCREEN, 32)
 pygame.display.set_caption("Catch the bubble")
 
 '''image loads'''
 background_image_filename = '1671682721_kalix-club-p-fon-dlya-prezentatsii-milnie-puziri-krasiv-41.jpg'
-background = pygame.image.load(background_image_filename).convert()
+background = pygame.transform.scale(pygame.image.load(background_image_filename).convert(),
+                                                         screen_size)
 cat_img = ['Kratos.png', 'nonono.png', 'byak.png', 'game_over.png', 'success.png']
 cat_images_load = []
 for image in cat_img:
@@ -26,7 +29,6 @@ bubble_img = ['bubble.png', 'boom.png']
 bubble_images_load = []
 for img in bubble_img:
     bubble_images_load.append(pygame.image.load(img).convert_alpha())
-
 
 '''colors'''
 black = (0, 0, 0)
@@ -48,7 +50,6 @@ text_surface = font.render("Kratos is your emperor!", False, (0, 0, 0), (255, 25
 pygame.time.set_timer(pygame.USEREVENT, 500)
 clock = pygame.time.Clock()
 
-
 '''score text'''
 def your_score(score):
     value = score_font.render("Your score: " + str(score), True, yellow)
@@ -56,7 +57,7 @@ def your_score(score):
 
 
 '''win or loss message'''
-def message(msg, color, cat = cat_lose):
+def message(msg, color, cat=cat_lose):
     mesg = font_style.render(msg, True, color)
     screen.blit(mesg, [20, cat.rect.y - dis_height / 10])
     screen.blit(cat.image, (cat.rect.x, cat.rect.y))
@@ -70,7 +71,7 @@ def bubbles(group):
     return bubble
 
 
-'''bubble collision'''
+'''bubble collision - rewatch(rectcollide)!!!'''
 def bubble_collision(main_list, second_list, group, num=1):
     # проверка на то ,что они листы + трай кэтч
     while len(main_list) < num:
@@ -93,10 +94,6 @@ def gameloop(num):
     game_over = False
     game_close = False
 
-    x, y = dis_width / 2, dis_height - cat_images_load[0].get_height()/2
-    cat = Kratos.Kratos(x, y, cat_images_load[0])
-    x_change, y_change = 0, 0
-
     bubbles_popped = 0
     bubls = pygame.sprite.Group()
     bubbles_array = []
@@ -106,8 +103,9 @@ def gameloop(num):
     bfirst = bubbles(bubls)
     bubbles_array.append(bfirst)
 
-    time_passed = clock.tick(60)
-    time_passed_seconds = time_passed / 1000.0
+    x, y = dis_width / 2, dis_height - cat_images_load[0].get_height() / 2
+    cat = Kratos.Kratos(x, y, cat_images_load[0])
+    x_change, y_change = 0, 0
 
     while not game_over:
         while game_close == True:
@@ -135,7 +133,7 @@ def gameloop(num):
                 exit()
             if event.type == KEYUP:
                 if event.key == K_SPACE:
-                    y_change = -1
+                    y_change = 0
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     game_over = True
@@ -144,13 +142,24 @@ def gameloop(num):
                 elif event.key == K_RIGHT:
                     x_change = +1
                 elif event.key == K_SPACE:
-                    y_change = +1
+                    y_change = 1
             if event.type == USEREVENT:
                 if num > len(bubbles_array):
                     i = bubbles(bubls)
                     bubbles_array.append(i)
         if cat.rect.x >= dis_width - cat.size or cat.rect.x < 0:
             game_close = True
+        time_passed = clock.tick(60)
+        time_passed_seconds = time_passed / 1000.0
+        cat.move(x_change, cat_images_load[1], y_change, cat_images_load[2])
+        cat.level_up(bubbles_popped)
+        screen.blit(background, (0, 0))
+        screen.blit(cat.image, cat.rect)
+        bubls.draw(screen)
+        your_score(bubbles_popped)
+        pygame.display.update()
+        pygame.time.delay(25)
+        bubls.update(dis_height, time_passed_seconds)
         for b in bubbles_array:
             distance_moved = time_passed_seconds * b.speed
             if b.rect.y < (dis_height - b.size):
@@ -158,42 +167,18 @@ def gameloop(num):
                 is_caught = pygame.Rect.colliderect(b.rect, cat.rect)
                 if is_caught:
                     if keys[pygame.K_SPACE]:
-                        b.pop = 1
+                        b.image = pygame.transform.scale(bubble_images_load[1].convert_alpha(),
+                                                         (b.size, b.size))
                         bubbles_popped += 1
-                        # b.image = pygame.transform.scale(bubble_images_load[1], (b.size, b.size))
-                        b.kill() #прекращает update
-                        bubbles_array.remove(b) #убирает из списка, т.е цикл далее на нее не распространяется, но она все еще в группе и update действует
-                        bubble_collision(bubbles_array, bubbles_rects, bubls, num) #создает новую
+                        bubbles_array.remove(b)
+                        b.kill()
+                        bubble_collision(bubbles_array, bubbles_rects, bubls, num)
             else:
-                b.kill()
                 bubbles_array.remove(b)
+                b.kill()
                 bubble_collision(bubbles_array, bubbles_rects, bubls, num)
-        cat.move(x_change, cat_images_load[1], y_change, cat_images_load[2])
-        screen.blit(background, (0, 0))
-        screen.blit(cat.image, cat.rect)
-        bubls.draw(screen)
-        your_score(bubbles_popped)
-        pygame.time.delay(25)
-        bubls.update(dis_height, time_passed_seconds, bubble_images_load[1])
-        # for b in bubbles_array:
-        #     distance_moved = time_passed_seconds * b.speed
-        #     if b.rect.y < (dis_height - b.size):
-        #         b.rect.y += distance_moved
-        #         is_caught = pygame.Rect.colliderect(b.rect, cat.rect)
-        #         if is_caught:
-        #             if keys[pygame.K_SPACE]:
-        #                 bubbles_popped += 1
-        #                 b.image = pygame.transform.scale(bubble_images_load[1], (b.size, b.size))
-        #                 b.kill() #прекращает update
-        #                 bubbles_array.remove(b) #убирает из списка, т.е цикл далее на нее не распространяется, но она все еще в группе и update действует
-        #                 bubble_collision(bubbles_array, bubbles_rects, bubls, num) #создает новую
-        #     else:
-        #         b.kill()
-        #         bubbles_array.remove(b)
-        #         bubble_collision(bubbles_array, bubbles_rects, bubls, num)
-        pygame.display.update()
     pygame.quit()
     quit()
 
 
-gameloop(5)
+gameloop(15)
