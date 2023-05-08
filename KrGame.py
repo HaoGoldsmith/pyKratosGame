@@ -8,8 +8,8 @@ pygame.init()
 screen_modes = [(1920, 1080), (1680, 1050), (1600, 900), (1440, 900), (1400, 1050), (1366, 768), (1360, 768), (1280, 1024), (1280, 960), (1280, 800), (1280, 768), (1280, 720), (1280, 600), (1152, 864), (1024, 768), (800, 600), (640, 480), (640, 400), (512, 384), (400, 300), (320, 240), (320, 200)]
 
 '''screen'''
-dis_width = 640
-dis_height = 480
+dis_width = 1920
+dis_height = 1080
 screen_size = (dis_width, dis_height)
 screen = pygame.display.set_mode(screen_size, 0, 32)
 # screen = pygame.display.set_mode(screen_size, FULLSCREEN, 32)
