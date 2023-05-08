@@ -106,9 +106,6 @@ def gameloop(num):
     bfirst = bubbles(bubls)
     bubbles_array.append(bfirst)
 
-    time_passed = clock.tick(60)
-    time_passed_seconds = time_passed / 1000.0
-
     while not game_over:
         while game_close == True:
             screen.blit(background, (0, 0))
@@ -151,6 +148,8 @@ def gameloop(num):
                     bubbles_array.append(i)
         if cat.rect.x >= dis_width - cat.size or cat.rect.x < 0:
             game_close = True
+        time_passed = clock.tick(60)
+        time_passed_seconds = time_passed / 1000.0
         for b in bubbles_array:
             distance_moved = time_passed_seconds * b.speed
             if b.rect.y < (dis_height - b.size):
