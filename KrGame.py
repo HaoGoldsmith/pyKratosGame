@@ -8,23 +8,25 @@ pygame.init()
 screen_modes = [(1920, 1080), (1680, 1050), (1600, 900), (1440, 900), (1400, 1050), (1366, 768), (1360, 768), (1280, 1024), (1280, 960), (1280, 800), (1280, 768), (1280, 720), (1280, 600), (1152, 864), (1024, 768), (800, 600), (640, 480), (640, 400), (512, 384), (400, 300), (320, 240), (320, 200)]
 
 '''screen'''
-dis_width = 640
-dis_height = 480
+
+dis_width, dis_height = 640, 480
 screen_size = (dis_width, dis_height)
-screen = pygame.display.set_mode(screen_size, 0, 32)
-# screen = pygame.display.set_mode(screen_size, FULLSCREEN, 32)
+# screen = pygame.display.set_mode(screen_size, 0, 32)
+screen = pygame.display.set_mode(screen_size, FULLSCREEN, 32)
 pygame.display.set_caption("Catch the bubble")
 
 '''image loads'''
 background_image_filename = '1671682721_kalix-club-p-fon-dlya-prezentatsii-milnie-puziri-krasiv-41.jpg'
 background = pygame.transform.scale(pygame.image.load(background_image_filename).convert(),
                                                          screen_size)
+cat_size = int(dis_width*0.078)
+print(cat_size, int(dis_width*0.3))
 cat_img = ['Kratos.png', 'nonono.png', 'byak.png', 'game_over.png', 'success.png']
 cat_images_load = []
 for image in cat_img:
     cat_images_load.append(pygame.image.load(image).convert_alpha())
-cat_lose = Kratos.Kratos(dis_width / 2, dis_height / 2, cat_images_load[3], 0, 150)
-cat_success = Kratos.Kratos(dis_width / 2, dis_height / 2, cat_images_load[4], 0, 150)
+cat_lose = Kratos.Kratos(dis_width / 2, dis_height / 2, cat_images_load[3], int(dis_width*0.3), 0)
+cat_success = Kratos.Kratos(dis_width / 2, dis_height / 2, cat_images_load[4], int(dis_width*0.3), 0)
 bubble_img = ['bubble.png', 'boom.png']
 bubble_images_load = []
 for img in bubble_img:
@@ -39,9 +41,9 @@ light_blue = (240, 248, 255)
 yellow = (255, 255, 102)
 
 '''fonts'''
-font_style = pygame.font.SysFont("bahnschrift", 25)
-score_font = pygame.font.SysFont("bahnschrift", 35)
-font = pygame.font.SysFont("arial", 16)
+font_style = pygame.font.SysFont("bahnschrift", int(dis_height * 0.05))
+score_font = pygame.font.SysFont("bahnschrift", int(dis_height * 0.07))
+font = pygame.font.SysFont("arial", int(dis_height * 0.03))
 font_height = font.get_linesize()
 event_text = []
 text_surface = font.render("Kratos is your emperor!", False, (0, 0, 0), (255, 255, 255))
@@ -51,23 +53,26 @@ pygame.time.set_timer(pygame.USEREVENT, 500)
 clock = pygame.time.Clock()
 
 '''score text'''
+# выравнивание по углу
 def your_score(score):
     value = score_font.render("Your score: " + str(score), True, yellow)
     screen.blit(value, [0, 0])
 
 
 '''win or loss message'''
+# выравнивание по центру
 def message(msg, color, cat=cat_lose):
     mesg = font_style.render(msg, True, color)
-    screen.blit(mesg, [20, cat.rect.y - dis_height / 10])
+    screen.blit(mesg, [int(dis_width*0.03), cat.rect.y - dis_height / 10])
     screen.blit(cat.image, (cat.rect.x, cat.rect.y))
 
 
+scales = (0.03, 0.045, 0.06, 0.075, 0.09, 0.105)
 '''bubble creation'''
 def bubbles(group):
-    bsize = random.randrange(20, 70)
+    bsize = random.randrange(int(dis_width*scales[0]),int(dis_width*scales[5]))
     bubblex = round(random.randrange(bsize, dis_width - bsize) / 10.0) * 10.0
-    bubble = Bubbles.Bubble(bubblex, 0, bsize, group, bubble_images_load[0])
+    bubble = Bubbles.Bubble(bubblex, 0, bsize, group, bubble_images_load[0],dis_width)
     return bubble
 
 
@@ -103,8 +108,8 @@ def gameloop(num):
     bfirst = bubbles(bubls)
     bubbles_array.append(bfirst)
 
-    x, y = dis_width / 2, dis_height - cat_images_load[0].get_height() / 2
-    cat = Kratos.Kratos(x, y, cat_images_load[0])
+    x, y = dis_width / 2, dis_height - cat_size / 2
+    cat = Kratos.Kratos(x, y, cat_images_load[0], cat_size)
     x_change, y_change = 0, 0
 
     while not game_over:

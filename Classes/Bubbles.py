@@ -5,7 +5,7 @@ import random
 
 class Bubble(pg.sprite.Sprite):
 
-    def __init__(self, x, y, size, group, image):
+    def __init__(self, x, y, size, group, image, W):
         pg.sprite.Sprite.__init__(self)
 
         self.image = pg.transform.scale(image, (size, size))
@@ -16,14 +16,14 @@ class Bubble(pg.sprite.Sprite):
 
         self.size = size
 
-
-        if size in range(20, 30):
+        scales = (0.03, 0.045, 0.06, 0.075, 0.09, 0.105)
+        if size in range(int(W*scales[0]), int(W*scales[1])):
             self.speed = 5  # 50-100-75
-        elif size in range(30, 40):
+        elif size in range(int(W*scales[1]), int(W*scales[2])):
             self.speed = 8
-        elif size in range(40, 50):
+        elif size in range(int(W*scales[2]), int(W*scales[3])):
             self.speed = 10
-        elif size in range(50, 60):
+        elif size in range(int(W*scales[3]), int(W*scales[4])):
             self.speed = 12
         else:
             self.speed = 14
