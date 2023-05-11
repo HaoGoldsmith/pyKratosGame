@@ -9,11 +9,18 @@ screen_modes = [(1920, 1080), (1680, 1050), (1600, 900), (1440, 900), (1400, 105
 
 '''screen'''
 
-dis_width, dis_height = 640, 480
+dis_width, dis_height = pygame.display.Info().current_w,  pygame.display.Info().current_h
+# dis_width, dis_height = 640, 480
 screen_size = (dis_width, dis_height)
-# screen = pygame.display.set_mode(screen_size, 0, 32)
-screen = pygame.display.set_mode(screen_size, FULLSCREEN, 32)
+screen = pygame.display.set_mode(screen_size, 0, 32)
 pygame.display.set_caption("Catch the bubble")
+
+# pygame.mixer.music.load("song-maker.mid")
+main_music = pygame.mixer.music.load("5504345228181504.wav")
+bubble_sound = pygame.mixer.Sound("lopaetsya-vozdushnyiy-sharik-komichno-36306.mp3")
+
+
+
 
 '''image loads'''
 background_image_filename = '1671682721_kalix-club-p-fon-dlya-prezentatsii-milnie-puziri-krasiv-41.jpg'
@@ -63,7 +70,9 @@ def your_score(score):
 # выравнивание по центру
 def message(msg, color, cat=cat_lose):
     mesg = font_style.render(msg, True, color)
-    screen.blit(mesg, [int(dis_width*0.03), cat.rect.y - dis_height / 10])
+    place = mesg.get_rect(
+        center=(dis_width/2, cat.rect.y - dis_height / 10))
+    screen.blit(mesg, place)
     screen.blit(cat.image, (cat.rect.x, cat.rect.y))
 
 
@@ -98,7 +107,7 @@ def bubble_collision(main_list, second_list, group, num=1):
 def gameloop(num):
     game_over = False
     game_close = False
-
+    pygame.mixer.music.play(-1)
     bubbles_popped = 0
     bubls = pygame.sprite.Group()
     bubbles_array = []
@@ -174,6 +183,7 @@ def gameloop(num):
                     if keys[pygame.K_SPACE]:
                         b.image = pygame.transform.scale(bubble_images_load[1].convert_alpha(),
                                                          (b.size, b.size))
+                        bubble_sound.play()
                         bubbles_popped += 1
                         bubbles_array.remove(b)
                         b.kill()
