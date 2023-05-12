@@ -5,22 +5,19 @@ import random
 from Classes import Bubbles, Kratos
 
 pygame.init()
-screen_modes = [(1920, 1080), (1680, 1050), (1600, 900), (1440, 900), (1400, 1050), (1366, 768), (1360, 768), (1280, 1024), (1280, 960), (1280, 800), (1280, 768), (1280, 720), (1280, 600), (1152, 864), (1024, 768), (800, 600), (640, 480), (640, 400), (512, 384), (400, 300), (320, 240), (320, 200)]
+
 
 '''screen'''
-
 dis_width, dis_height = pygame.display.Info().current_w,  pygame.display.Info().current_h
-# dis_width, dis_height = 640, 480
 screen_size = (dis_width, dis_height)
 screen = pygame.display.set_mode(screen_size, 0, 32)
 pygame.display.set_caption("Catch the bubble")
 
-# pygame.mixer.music.load("song-maker.mid")
+'''music'''
 main_music = pygame.mixer.music.load("5504345228181504.wav")
 bubble_sound = pygame.mixer.Sound("lopaetsya-vozdushnyiy-sharik-komichno-36306.mp3")
-
-
-
+end_sound = pygame.mixer.Sound("game-lost.mp3")
+win_sound = pygame.mixer.Sound("dominirovanie-igrovogo-personaja-po-vneshnemu-vidu-bgm-42277.mp3")
 
 '''image loads'''
 background_image_filename = '1671682721_kalix-club-p-fon-dlya-prezentatsii-milnie-puziri-krasiv-41.jpg'
@@ -107,7 +104,11 @@ def bubble_collision(main_list, second_list, group, num=1):
 def gameloop(num):
     game_over = False
     game_close = False
+
     pygame.mixer.music.play(-1)
+    hasPlayedGameOverSound = False
+    flPause = False
+
     bubbles_popped = 0
     bubls = pygame.sprite.Group()
     bubbles_array = []
@@ -124,9 +125,16 @@ def gameloop(num):
     while not game_over:
         while game_close == True:
             screen.blit(background, (0, 0))
+            pygame.mixer.music.stop()
             if bubbles_popped < 20:
+                if hasPlayedGameOverSound is False:
+                    end_sound.play(0)
+                    hasPlayedGameOverSound = True
                 message("Weakling! Press C to try again or ESC to lose your dignity", red)
             else:
+                if hasPlayedGameOverSound is False:
+                    win_sound.play(0, 4000, 2500)
+                    hasPlayedGameOverSound = True
                 message("I am great hunter! Let's try again(C) or go to sleep(ESC)", red, cat_success)
             pygame.display.update()
             for event in pygame.event.get():
@@ -157,6 +165,12 @@ def gameloop(num):
                     x_change = +1
                 elif event.key == K_SPACE:
                     y_change = 1
+                elif event.key == pygame.K_s:
+                    flPause = not flPause
+                    if flPause:
+                        pygame.mixer.music.pause()
+                    else:
+                        pygame.mixer.music.unpause()
             if event.type == USEREVENT:
                 if num > len(bubbles_array):
                     i = bubbles(bubls)
