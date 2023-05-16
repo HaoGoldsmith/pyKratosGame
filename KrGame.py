@@ -180,8 +180,7 @@ def gameloop(num):
             game_close = True
         time_passed = clock.tick(60)
         time_passed_seconds = time_passed / 1000.0
-        cat.move(x_change, cat_images_load[6], y_change, cat_images_load[2])
-        # cat.move(x_change, cat_walk, y_change, cat_images_load[2])
+        cat.move(x_change, y_change, cat_images_load[2])
         cat.level_up(bubbles_popped)
         screen.blit(background, (0, 0))
         screen.blit(cat.image, cat.rect)
@@ -197,8 +196,6 @@ def gameloop(num):
                 is_caught = pygame.Rect.colliderect(b.rect, cat.rect)
                 if is_caught:
                     if keys[pygame.K_SPACE]:
-                        # b.image = pygame.transform.scale(bubble_images_load[1].convert_alpha(),
-                        #                                  (b.size, b.size))
                         bubble_sound.play()
                         bubbles_popped += 1
                         bubbles_array.remove(b)

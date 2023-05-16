@@ -44,14 +44,13 @@ class Kratos(pg.sprite.Sprite):
             else:
                 self.image = pg.transform.scale(self.anim[self.frame], (self.size, self.size))
 
-    def move(self, x_change, image, y_change, image2):
+
+    def move(self, x_change, y_change, image2):
         if x_change == 1:
-            # self.image = pg.transform.scale(image,(self.size, self.size))
             self.walk(False)
             self.rect.x += self.speed
             self.catch(y_change, image2)
         elif x_change == -1:
-            # self.image = pg.transform.flip(pg.transform.scale(image,(self.size, self.size)), True, False)
             self.walk(True)
             self.rect.x -= self.speed
             self.catch(-y_change, image2)
