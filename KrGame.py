@@ -25,10 +25,11 @@ background = pygame.transform.scale(pygame.image.load(background_image_filename)
                                                          screen_size)
 cat_size = int(dis_width*0.078)
 print(cat_size, int(dis_width*0.3))
-cat_img = ['Kratos.png', 'nonono.png', 'byak.png', 'game_over.png', 'success.png']
+cat_img = ['Kratos.png', 'nonono.png', 'byak.png', 'game_over.png', 'success.png', 'walk1.png', 'walk2.png', 'walk4.png']
 cat_images_load = []
 for image in cat_img:
     cat_images_load.append(pygame.image.load(image).convert_alpha())
+cat_walk = [cat_images_load[6],cat_images_load[5],cat_images_load[6],cat_images_load[7]]
 cat_lose = Kratos.Kratos(dis_width / 2, dis_height / 2, cat_images_load[3], int(dis_width*0.3), 0)
 cat_success = Kratos.Kratos(dis_width / 2, dis_height / 2, cat_images_load[4], int(dis_width*0.3), 0)
 bubble_img = ['bubble.png', 'boom.png']
@@ -119,7 +120,7 @@ def gameloop(num):
     bubbles_array.append(bfirst)
 
     x, y = dis_width / 2, dis_height - cat_size / 2
-    cat = Kratos.Kratos(x, y, cat_images_load[0], cat_size)
+    cat = Kratos.Kratos(x, y, cat_images_load[0], cat_size, anims = cat_walk)
     x_change, y_change = 0, 0
 
     while not game_over:
@@ -179,7 +180,8 @@ def gameloop(num):
             game_close = True
         time_passed = clock.tick(60)
         time_passed_seconds = time_passed / 1000.0
-        cat.move(x_change, cat_images_load[1], y_change, cat_images_load[2])
+        cat.move(x_change, cat_images_load[6], y_change, cat_images_load[2])
+        # cat.move(x_change, cat_walk, y_change, cat_images_load[2])
         cat.level_up(bubbles_popped)
         screen.blit(background, (0, 0))
         screen.blit(cat.image, cat.rect)
@@ -195,8 +197,8 @@ def gameloop(num):
                 is_caught = pygame.Rect.colliderect(b.rect, cat.rect)
                 if is_caught:
                     if keys[pygame.K_SPACE]:
-                        b.image = pygame.transform.scale(bubble_images_load[1].convert_alpha(),
-                                                         (b.size, b.size))
+                        # b.image = pygame.transform.scale(bubble_images_load[1].convert_alpha(),
+                        #                                  (b.size, b.size))
                         bubble_sound.play()
                         bubbles_popped += 1
                         bubbles_array.remove(b)

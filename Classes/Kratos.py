@@ -6,7 +6,7 @@ import random
 class Kratos(pg.sprite.Sprite):
 
 
-    def __init__(self, x, y, image, size, speed_scale = 0.06):
+    def __init__(self, x, y, image, size, speed_scale = 0.06, anims = None):
         #cat speed lvl1 - 0.06, lvl2 - 0.08, lvl3 - 0.1
         pg.sprite.Sprite.__init__(self)
 
@@ -18,6 +18,11 @@ class Kratos(pg.sprite.Sprite):
 
         self.speed = size*speed_scale
 
+        self.anim = anims
+        self.frame = 0  # текущий кадр
+        self.last_update = pg.time.get_ticks()
+        self.frame_rate = 60  # как быстро кадры меняются
+
 
 
     def catch(self,y_change, image2):
@@ -27,13 +32,27 @@ class Kratos(pg.sprite.Sprite):
             self.image = pg.transform.flip(pg.transform.scale(image2,(self.size, self.size)), True, False)
 
 
+    def walk(self, flip=False):
+        now = pg.time.get_ticks()
+        if now - self.last_update > self.frame_rate:
+            self.last_update = now
+            self.frame += 1
+            if self.frame == len(self.anim):
+                self.frame = 0
+            if flip:
+                self.image = pg.transform.flip(pg.transform.scale(self.anim[self.frame],(self.size, self.size)), True, False)
+            else:
+                self.image = pg.transform.scale(self.anim[self.frame], (self.size, self.size))
+
     def move(self, x_change, image, y_change, image2):
         if x_change == 1:
-            self.image = pg.transform.scale(image,(self.size, self.size))
+            # self.image = pg.transform.scale(image,(self.size, self.size))
+            self.walk(False)
             self.rect.x += self.speed
             self.catch(y_change, image2)
         elif x_change == -1:
-            self.image = pg.transform.flip(pg.transform.scale(image,(self.size, self.size)), True, False)
+            # self.image = pg.transform.flip(pg.transform.scale(image,(self.size, self.size)), True, False)
+            self.walk(True)
             self.rect.x -= self.speed
             self.catch(-y_change, image2)
 
@@ -45,7 +64,6 @@ class Kratos(pg.sprite.Sprite):
             self.speed = self.size*0.1
         else:
             self.speed = self.size*0.06
-
 
 
 
